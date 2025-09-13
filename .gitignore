@@ -1,0 +1,45 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtual environment
+venv/
+.env/
+.env.*   # optional if you use multiple env files
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# Mac OS
+.DS_Store
+
+# Local database files
+*.db
+*.sqlite3
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.swp
+
+# Coverage
+htmlcov/
+.coverage
+
+# pytest cache
+.pytest_cache/
+
+# Alembic / migrations (only ignore if you want)
+migrations/versions/*.pyc
