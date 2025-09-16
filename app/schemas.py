@@ -2,15 +2,15 @@ from pydantic import BaseModel, ConfigDict
 from typing import List, Optional
 import datetime
 
-# -------------------
-# Teacher Schemas
-# -------------------
+
 class TeacherBase(BaseModel):
     name: str
     email: str
 
+
 class TeacherCreate(TeacherBase):
     password: str
+
 
 class Teacher(TeacherBase):
     id: int
@@ -28,8 +28,10 @@ class StudentBase(BaseModel):
     disabilities: Optional[List[str]] = []
     baseline_skills: Optional[dict] = {}
 
+
 class StudentCreate(StudentBase):
-    classroom_id: int
+    pass
+
 
 class Student(StudentBase):
     id: int
@@ -46,8 +48,10 @@ class GoalBase(BaseModel):
     target_date: datetime.date
     progress: float = 0.0
 
+
 class GoalCreate(GoalBase):
     student_id: int
+
 
 class Goal(GoalBase):
     id: int
@@ -63,8 +67,10 @@ class NoteBase(BaseModel):
     author: str
     content: str
 
+
 class NoteCreate(NoteBase):
     student_id: int
+
 
 class Note(NoteBase):
     id: int
