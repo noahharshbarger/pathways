@@ -1,7 +1,78 @@
 from sqlalchemy.orm import Session
 from typing import List
-from .models import Teacher, Student, Goal, Note
-from .schemas import GoalCreate, NoteCreate, TeacherCreate, StudentBase
+from .models import Teacher, Student, Goal, Note, IEP, ProgressLog
+from .schemas import (
+    GoalCreate,
+    NoteCreate,
+    TeacherCreate,
+    StudentBase,
+    IEPCreate,
+    ProgressLogCreate,
+)
+
+# -----------------------------
+# IEPs
+# -----------------------------
+
+
+def create_iep(db: Session, iep: IEPCreate) -> IEP:
+    db_iep = IEP(**iep.dict())
+    db.add(db_iep)
+    db.commit()
+    db.refresh(db_iep)
+    return db_iep
+
+
+def get_ieps_by_student(db: Session, student_id: int) -> List[IEP]:
+    return db.query(IEP).filter(IEP.student_id == student_id).all()
+
+
+def get_iep(db: Session, iep_id: int) -> IEP:
+    return db.query(IEP).filter(IEP.id == iep_id).first()
+
+
+def update_iep(db: Session, iep_id: int, data: dict, updated_by: str) -> IEP:
+    db_iep = db.query(IEP).filter(IEP.id == iep_id).first()
+    if db_iep:
+        db_iep.data = data
+        db_iep.updated_by = updated_by
+        db.commit()
+        db.refresh(db_iep)
+    return db_iep
+
+
+def delete_iep(db: Session, iep_id: int) -> None:
+    db_iep = db.query(IEP).filter(IEP.id == iep_id).first()
+    if db_iep:
+        db.delete(db_iep)
+        db.commit()
+
+# -----------------------------
+# Progress Logs
+# -----------------------------
+
+
+def create_progress_log(db: Session, log: ProgressLogCreate) -> ProgressLog:
+    db_log = ProgressLog(**log.dict())
+    db.add(db_log)
+    db.commit()
+    db.refresh(db_log)
+    return db_log
+
+
+def get_progress_logs_by_iep(db: Session, iep_id: int) -> List[ProgressLog]:
+    return db.query(ProgressLog).filter(ProgressLog.iep_id == iep_id).all()
+
+
+def get_progress_log(db: Session, log_id: int) -> ProgressLog:
+    return db.query(ProgressLog).filter(ProgressLog.id == log_id).first()
+
+
+def delete_progress_log(db: Session, log_id: int) -> None:
+    db_log = db.query(ProgressLog).filter(ProgressLog.id == log_id).first()
+    if db_log:
+        db.delete(db_log)
+        db.commit()
 
 # -----------------------------
 # Goals

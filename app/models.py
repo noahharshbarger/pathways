@@ -77,3 +77,46 @@ class Note(Base):
 
     # Relationships
     student = relationship("Student", back_populates="notes")
+
+
+# -------------------
+# IEP and ProgressLog Models
+# -------------------
+
+class IEP(Base):
+    __tablename__ = "ieps"
+
+    id = Column(Integer, primary_key=True, index=True)
+    student_id = Column(Integer, ForeignKey("students.id"), nullable=False)
+    # Flexible IEP structure (goals, benchmarks, services, timelines)
+    data = Column(JSON, nullable=False)
+    created_by = Column(String, nullable=False)
+    updated_by = Column(String, nullable=True)
+    created_at = Column(TIMESTAMP, default=datetime.utcnow)
+    updated_at = Column(
+        TIMESTAMP,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
+    )
+
+    # Relationships
+    student = relationship("Student", backref="ieps")
+    progress_logs = relationship(
+        "ProgressLog",
+        back_populates="iep",
+        cascade="all, delete-orphan"
+    )
+
+
+class ProgressLog(Base):
+    __tablename__ = "progress_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    iep_id = Column(Integer, ForeignKey("ieps.id"), nullable=False)
+    # Flexible log structure (daily/weekly logs, notes, attendance)
+    data = Column(JSON, nullable=False)
+    created_by = Column(String, nullable=False)
+    created_at = Column(TIMESTAMP, default=datetime.utcnow)
+
+    # Relationships
+    iep = relationship("IEP", back_populates="progress_logs")

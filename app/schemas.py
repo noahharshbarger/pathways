@@ -41,6 +41,49 @@ class Student(StudentBase):
     model_config = ConfigDict(from_attributes=True)
 
 
+# -------------------
+# IEP and ProgressLog Schemas
+# -------------------
+class IEPBase(BaseModel):
+    data: dict
+    # Flexible IEP structure (goals, benchmarks, services, timelines)
+
+
+class IEPCreate(IEPBase):
+    student_id: int
+    created_by: str
+
+
+class IEP(IEPBase):
+    id: int
+    student_id: int
+    created_by: str
+    updated_by: Optional[str] = None
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+    progress_logs: List['ProgressLog'] = []
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ProgressLogBase(BaseModel):
+    data: dict  # Flexible log structure (daily/weekly logs, notes, attendance)
+
+
+class ProgressLogCreate(ProgressLogBase):
+    iep_id: int
+    created_by: str
+
+
+class ProgressLog(ProgressLogBase):
+    id: int
+    iep_id: int
+    created_by: str
+    created_at: datetime.datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 # Goal Schemas
 class GoalBase(BaseModel):
     type: str
