@@ -1,7 +1,17 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Text, Date, JSON, TIMESTAMP
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    ForeignKey,
+    Text,
+    Date,
+    JSON,
+    TIMESTAMP
+)
 from sqlalchemy.orm import relationship
 from .database import Base
 from datetime import datetime
+
 
 class Teacher(Base):
     __tablename__ = "teachers"
@@ -14,8 +24,12 @@ class Teacher(Base):
     classroom_id = Column(Integer, unique=True)
 
     # Relationships
-    students = relationship("Student", back_populates="teacher", cascade="all, delete-orphan")
-    goals = relationship("Goal", back_populates="teacher", cascade="all, delete-orphan")
+    students = relationship(
+        "Student", back_populates="teacher", cascade="all, delete-orphan"
+        )
+    goals = relationship(
+        "Goal", back_populates="teacher", cascade="all, delete-orphan"
+    )
 
 
 class Student(Base):
@@ -30,8 +44,12 @@ class Student(Base):
 
     # Relationships
     teacher = relationship("Teacher", back_populates="students")
-    goals = relationship("Goal", back_populates="student", cascade="all, delete-orphan")
-    notes = relationship("Note", back_populates="student", cascade="all, delete-orphan")
+    goals = relationship(
+        "Goal", back_populates="student", cascade="all, delete-orphan"
+    )
+    notes = relationship(
+        "Note", back_populates="student", cascade="all, delete-orphan"
+    )
 
 
 class Goal(Base):

@@ -9,7 +9,7 @@ class TeacherBase(BaseModel):
 
 
 class TeacherCreate(TeacherBase):
-    password: str
+    password_hash: str
 
 
 class Teacher(TeacherBase):
