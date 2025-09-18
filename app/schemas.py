@@ -6,6 +6,7 @@ import datetime
 class TeacherBase(BaseModel):
     name: str
     email: str
+    role: Optional[str] = "teacher"
 
 
 class TeacherCreate(TeacherBase):
@@ -14,7 +15,10 @@ class TeacherCreate(TeacherBase):
 
 class Teacher(TeacherBase):
     id: int
+    email: str
+    name: str
     role: str
+    classroom_id: Optional[int] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -35,8 +39,10 @@ class StudentCreate(StudentBase):
 
 class Student(StudentBase):
     id: int
-    goals: List['Goal'] = []
-    notes: List['Note'] = []
+    dob: datetime.date
+    disabilities: Optional[List[str]] = []
+    baseline_skills: Optional[dict] = {}
+    teacher_id: Optional[int] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -57,11 +63,11 @@ class IEPCreate(IEPBase):
 class IEP(IEPBase):
     id: int
     student_id: int
+    data: dict
     created_by: str
     updated_by: Optional[str] = None
     created_at: datetime.datetime
     updated_at: datetime.datetime
-    progress_logs: List['ProgressLog'] = []
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -78,6 +84,7 @@ class ProgressLogCreate(ProgressLogBase):
 class ProgressLog(ProgressLogBase):
     id: int
     iep_id: int
+    data: dict
     created_by: str
     created_at: datetime.datetime
 
@@ -99,6 +106,9 @@ class GoalCreate(GoalBase):
 class Goal(GoalBase):
     id: int
     student_id: int
+    description: str
+    progress: float = 0.0
+    teacher_id: Optional[int] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -109,6 +119,7 @@ class Goal(GoalBase):
 class NoteBase(BaseModel):
     author: str
     content: str
+    goal_id: Optional[int] = None
 
 
 class NoteCreate(NoteBase):
@@ -118,9 +129,9 @@ class NoteCreate(NoteBase):
 class Note(NoteBase):
     id: int
     student_id: int
-    timestamp: datetime.datetime  # use datetime.datetime explicitly
+    goal_id: Optional[int] = None
+    author: str
+    content: str
+    timestamp: datetime.datetime
 
-    model_config = ConfigDict(
-        from_attributes=True,
-        arbitrary_types_allowed=True  # needed for datetime
-    )
+    model_config = ConfigDict(from_attributes=True)

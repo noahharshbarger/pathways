@@ -84,7 +84,10 @@ def create_goal(
         student_id: int = None,
         teacher_id: int = None
         ) -> Goal:
-    db_goal = Goal(**goal.dict(), student_id=student_id, teacher_id=teacher_id)
+    goal_data = goal.dict()
+    goal_data.pop("student_id", None)
+    # 'type' and 'target_date' ARE model columns and required, so keep them
+    db_goal = Goal(**goal_data, student_id=student_id, teacher_id=teacher_id)
     db.add(db_goal)
     db.commit()
     db.refresh(db_goal)
@@ -120,7 +123,9 @@ def get_goals_by_teacher(db: Session, teacher_id: int) -> List[Goal]:
 # -----------------------------
 
 def create_note(db: Session, note: NoteCreate, student_id: int) -> Note:
-    db_note = Note(**note.dict(), student_id=student_id)
+    note_data = note.dict()
+    note_data.pop("student_id", None)
+    db_note = Note(**note_data, student_id=student_id)
     db.add(db_note)
     db.commit()
     db.refresh(db_note)

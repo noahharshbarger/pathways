@@ -2,13 +2,18 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from .. import crud, schemas, database
+from ..permissions import require_roles
 
 router = APIRouter(prefix="/ieps", tags=["ieps"])
 get_db = database.get_db
 
 
 @router.post("/", response_model=schemas.IEP)
-def create_iep(iep: schemas.IEPCreate, db: Session = Depends(get_db)):
+def create_iep(
+    iep: schemas.IEPCreate,
+    db: Session = Depends(get_db),
+    user=Depends(require_roles(["teacher", "admin"]))
+):
     return crud.create_iep(db, iep)
 
 
@@ -29,9 +34,10 @@ def get_iep(iep_id: int, db: Session = Depends(get_db)):
 def update_iep(
     iep_id: int,
     iep_update: schemas.IEPBase,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    user=Depends(require_roles(["teacher", "admin"]))
 ):
-    updated_by = "system"  # Placeholder
+    updated_by = user.role  # Example: use role as updated_by
     iep = crud.update_iep(db, iep_id, iep_update.data, updated_by)
     if not iep:
         raise HTTPException(status_code=404, detail="IEP not found")

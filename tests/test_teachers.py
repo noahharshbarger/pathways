@@ -9,14 +9,14 @@ def test_create_teacher():
         "/teachers/",
         json={
             "name": "Test Teacher",
-            "email": "teacher@example.com",
+            "email": "teacher_unique1_1@example.com",
             "password_hash": "secret"
         }
     )
     assert resp.status_code == 200
     data = resp.json()
     assert data["name"] == "Test Teacher"
-    assert data["email"] == "teacher@example.com"
+    assert data["email"] == "teacher_unique1_1@example.com"
     assert "id" in data
 
 
@@ -26,7 +26,7 @@ def test_get_teacher():
         "/teachers/",
         json={
             "name": "Teacher2",
-            "email": "teacher2@example.com",
+            "email": "teacher_unique2_2@example.com",
             "password_hash": "secret"
         }
     )
@@ -43,7 +43,7 @@ def test_delete_teacher():
         "/teachers/",
         json={
             "name": "Teacher3",
-            "email": "teacher3@example.com",
+            "email": "teacher_unique3_3@example.com",
             "password_hash": "secret"
         }
     )
@@ -52,8 +52,7 @@ def test_delete_teacher():
     assert resp.status_code == 200
     # Should not find after delete
     resp = client.get(f"/teachers/{teacher_id}")
-    assert resp.status_code == 200
-    assert resp.json() is None
+    assert resp.status_code == 404
 
 
 def test_create_goal():
@@ -67,14 +66,14 @@ def test_create_goal():
             "baseline_skills": {}
         }
     ).json()
-    client.post(
+    teacher = client.post(
         "/teachers/",
         json={
             "name": "Goal Teacher",
-            "email": "goalteacher@example.com",
+            "email": "goalteacher_unique4@example.com",
             "password_hash": "secret"
         }
-    )
+    ).json()
     goal = {
         "type": "academic",
         "description": "Improve math",
@@ -82,7 +81,7 @@ def test_create_goal():
         "progress": 0,
         "student_id": student["id"]
     }
-    resp = client.post("/goals/", json=goal)
+    resp = client.post(f"/goals/?user_id={teacher['id']}", json=goal)
     assert resp.status_code == 200
     data = resp.json()
     assert data["description"] == "Improve math"

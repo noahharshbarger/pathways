@@ -56,7 +56,9 @@ class Goal(Base):
     __tablename__ = "goals"
 
     id = Column(Integer, primary_key=True, index=True)
+    type = Column(String, nullable=False)
     description = Column(String, nullable=False)
+    target_date = Column(Date, nullable=False)
     progress = Column(Integer, default=0)
     student_id = Column(Integer, ForeignKey("students.id"), nullable=True)
     teacher_id = Column(Integer, ForeignKey("teachers.id"), nullable=True)
@@ -71,6 +73,7 @@ class Note(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     student_id = Column(Integer, ForeignKey("students.id"))
+    goal_id = Column(Integer, ForeignKey("goals.id"), nullable=True)
     author = Column(String)
     timestamp = Column(TIMESTAMP, default=datetime.utcnow)
     content = Column(Text)
