@@ -14,7 +14,7 @@ def clean_db():
 	with engine.connect() as conn:
 		conn.execute(sqlalchemy.text(
 			"""
-			TRUNCATE teachers, students, goals, notes, ieps, progress_logs \
+			TRUNCATE teachers, students, goals, notes, ieps, progress_logs, parents, student_parents \
 			RESTART IDENTITY CASCADE;
 			"""
 		))

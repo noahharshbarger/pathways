@@ -1,7 +1,11 @@
+
 from sqlalchemy.orm import Session
 from typing import List
-from .models import Teacher, Student, Goal, Note, IEP, ProgressLog
+from .models import (
+    Parent, StudentParent, Teacher, Student, Goal, Note, IEP, ProgressLog
+)
 from .schemas import (
+    ParentCreate,
     GoalCreate,
     NoteCreate,
     TeacherCreate,
@@ -9,6 +13,40 @@ from .schemas import (
     IEPCreate,
     ProgressLogCreate,
 )
+
+
+def create_parent(db: Session, parent: ParentCreate) -> Parent:
+    db_parent = Parent(**parent.dict())
+    db.add(db_parent)
+    db.commit()
+    db.refresh(db_parent)
+    return db_parent
+
+
+def get_parent(db: Session, parent_id: int) -> Parent:
+    return db.query(Parent).filter(Parent.id == parent_id).first()
+
+
+def get_parents(db: Session) -> List[Parent]:
+    return db.query(Parent).all()
+
+
+def update_parent(db: Session, parent_id: int, parent: ParentCreate) -> Parent:
+    db_parent = db.query(Parent).filter(Parent.id == parent_id).first()
+    if not db_parent:
+        return None
+    for field, value in parent.dict().items():
+        setattr(db_parent, field, value)
+    db.commit()
+    db.refresh(db_parent)
+    return db_parent
+
+
+def delete_parent(db: Session, parent_id: int) -> None:
+    db_parent = db.query(Parent).filter(Parent.id == parent_id).first()
+    if db_parent:
+        db.delete(db_parent)
+        db.commit()
 
 # -----------------------------
 # IEPs
@@ -146,12 +184,30 @@ def get_notes_by_teacher(db: Session, teacher_id: int) -> List[Note]:
 # Students
 # -----------------------------
 
-def create_student(db: Session, student: StudentBase) -> Student:
-    db_student = Student(**student.dict())
+def create_student(db: Session, student) -> Student:
+    # Accepts StudentCreate schema (with parents field)
+    data = student.dict()
+    # Use student.parents directly to ensure we always get the parent IDs
+    parent_ids = getattr(student, "parents", [])
+    data.pop("parents", None)
+    db_student = Student(**data)
     db.add(db_student)
+    db.flush()  # Assigns db_student.id before commit
+    for pid in parent_ids:
+        assoc = StudentParent(student_id=db_student.id, parent_id=pid)
+        db.add(assoc)
     db.commit()
     db.refresh(db_student)
     return db_student
+
+
+def update_student_parents(db: Session, student_id: int, parent_ids: list[int]):
+    # Remove existing
+    db.query(StudentParent).filter(StudentParent.student_id == student_id).delete()
+    # Add new
+    for pid in parent_ids:
+        db.add(StudentParent(student_id=student_id, parent_id=pid))
+    db.commit()
 
 
 def get_student(db: Session, student_id: int) -> Student:

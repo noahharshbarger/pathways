@@ -3,6 +3,34 @@ from typing import List, Optional
 import datetime
 
 
+class ParentBase(BaseModel):
+    name: str
+    email: str
+    phone: Optional[str] = None
+
+
+class ParentCreate(ParentBase):
+    pass
+
+
+class Parent(ParentBase):
+    id: int
+    # List of student IDs (many-to-many)
+    students: Optional[list[int]] = []
+    model_config = ConfigDict(from_attributes=True)
+
+
+# Association schema for Student <-> Parent (optional, for advanced use)
+class StudentParentBase(BaseModel):
+    student_id: int
+    parent_id: int
+
+
+class StudentParent(StudentParentBase):
+    id: int
+    model_config = ConfigDict(from_attributes=True)
+
+
 class TeacherBase(BaseModel):
     name: str
     email: str
@@ -34,7 +62,7 @@ class StudentBase(BaseModel):
 
 
 class StudentCreate(StudentBase):
-    pass
+    parents: Optional[list[int]] = []
 
 
 class Student(StudentBase):
@@ -43,6 +71,8 @@ class Student(StudentBase):
     disabilities: Optional[List[str]] = []
     baseline_skills: Optional[dict] = {}
     teacher_id: Optional[int] = None
+    # List of parent IDs (many-to-many)
+    parents: Optional[list[int]] = []
 
     model_config = ConfigDict(from_attributes=True)
 

@@ -7,6 +7,7 @@ from .routers import (
 	teachers,
 	ieps,
 	progress,
+	parents,
 )
 
 app = FastAPI(title="Student Tracker")
@@ -18,3 +19,4 @@ app.include_router(dashboard.router)
 app.include_router(teachers.router)
 app.include_router(ieps.router)
 app.include_router(progress.router)
+app.include_router(parents.router)

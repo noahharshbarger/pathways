@@ -13,6 +13,33 @@ from .database import Base
 from datetime import datetime
 
 
+class Parent(Base):
+    __tablename__ = "parents"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    email = Column(String, unique=True, index=True)
+    phone = Column(String, nullable=True)
+
+    # Relationships
+    student_parents = relationship(
+        "StudentParent", back_populates="parent", cascade="all, delete-orphan"
+    )
+
+
+# Association table for many-to-many Student <-> Parent
+
+class StudentParent(Base):
+    __tablename__ = "student_parents"
+    id = Column(Integer, primary_key=True, index=True)
+    student_id = Column(Integer, ForeignKey("students.id"), nullable=False)
+    parent_id = Column(Integer, ForeignKey("parents.id"), nullable=False)
+
+    # Relationships
+    student = relationship("Student", back_populates="student_parents")
+    parent = relationship("Parent", back_populates="student_parents")
+
+
 class Teacher(Base):
     __tablename__ = "teachers"
 
@@ -49,6 +76,9 @@ class Student(Base):
     )
     notes = relationship(
         "Note", back_populates="student", cascade="all, delete-orphan"
+    )
+    student_parents = relationship(
+        "StudentParent", back_populates="student", cascade="all, delete-orphan"
     )
 
 
